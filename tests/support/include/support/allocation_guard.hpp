@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <source_location>
 
-namespace myproj::test_support {
+namespace qs_review_38::test_support {
 
 // Every global operator new since the program started, on every thread.
 [[nodiscard]] std::size_t allocations_so_far() noexcept;
@@ -29,4 +29,4 @@ private:
     std::size_t start_;
 };
 
-} // namespace myproj::test_support
+} // namespace qs_review_38::test_support

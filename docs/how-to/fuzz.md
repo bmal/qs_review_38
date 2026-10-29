@@ -33,7 +33,7 @@ Call the code with those bytes, call `std::abort()` when a result breaks a promi
 Put at least one valid input in `tests/fuzz/corpus/<name>/`, then add one line to `tests/fuzz/CMakeLists.txt`:
 
 ```cmake
-project_add_fuzz_target(NAME <name> DEPS myproj::<module>)
+project_add_fuzz_target(NAME <name> DEPS qs_review_38::<module>)
 ```
 
 Fuzzing needs Clang; there is no `fuzz-gcc` preset.

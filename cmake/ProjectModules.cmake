@@ -16,7 +16,7 @@ endfunction()
 
 # project_add_module(NAME <n> [PUBLIC_DEPS ...] [PRIVATE_DEPS ...] [SOURCES ...]
 #                    [NO_EXCEPTIONS] [NO_RTTI] [INTERNAL])
-# Creates myproj_<n> and myproj::<n>, installed as MyProj::<n> unless INTERNAL.
+# Creates qs_review_38_<n> and qs_review_38::<n>, installed as QsReview38::<n> unless INTERNAL.
 # No sources under src/ makes it an INTERFACE library.
 function(project_add_module)
   cmake_parse_arguments(
@@ -33,7 +33,7 @@ function(project_add_module)
     message(FATAL_ERROR "project_add_module: NAME must be lower snake_case, got '${arg_NAME}'")
   endif()
 
-  set(target myproj_${arg_NAME})
+  set(target qs_review_38_${arg_NAME})
   set(include_dir "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
   if(arg_SOURCES)
@@ -52,8 +52,8 @@ function(project_add_module)
       PUBLIC ${arg_PUBLIC_DEPS}
       PRIVATE
         ${arg_PRIVATE_DEPS}
-        $<BUILD_INTERFACE:myproj_warnings>
-        $<BUILD_INTERFACE:myproj_options>
+        $<BUILD_INTERFACE:qs_review_38_warnings>
+        $<BUILD_INTERFACE:qs_review_38_options>
     )
     target_compile_options(
       ${target}
@@ -69,9 +69,9 @@ function(project_add_module)
     target_link_libraries(${target} INTERFACE ${arg_PUBLIC_DEPS})
   endif()
 
-  add_library(myproj::${arg_NAME} ALIAS ${target})
-  set_target_properties(${target} PROPERTIES MYPROJ_INTERNAL "${arg_INTERNAL}")
-  set_property(GLOBAL APPEND PROPERTY MYPROJ_MODULES ${arg_NAME})
+  add_library(qs_review_38::${arg_NAME} ALIAS ${target})
+  set_target_properties(${target} PROPERTIES QS_REVIEW_38_INTERNAL "${arg_INTERNAL}")
+  set_property(GLOBAL APPEND PROPERTY QS_REVIEW_38_MODULES ${arg_NAME})
   if(PROJECT_INSTALL AND NOT arg_INTERNAL)
     _project_install_module(${arg_NAME} ${target} "${include_dir}")
   endif()
@@ -84,7 +84,7 @@ endfunction()
 
 function(_project_add_unit_tests name test_dir)
   file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${test_dir}/*.cpp")
-  _project_add_gtest(${name}_unit_tests SOURCES ${sources} DEPS myproj::${name})
+  _project_add_gtest(${name}_unit_tests SOURCES ${sources} DEPS qs_review_38::${name})
   # A directory label, because CMake 3.28 keeps only the first entry of a LABELS list
   # passed through gtest_discover_tests. libs/<n> holds no other tests.
   set_property(DIRECTORY APPEND PROPERTY LABELS unit ${name})
@@ -114,7 +114,7 @@ function(_project_add_gtest target)
   add_executable(${target} ${arg_SOURCES})
   target_link_libraries(
     ${target}
-    PRIVATE ${arg_DEPS} myproj_test_support myproj_warnings myproj_options
+    PRIVATE ${arg_DEPS} qs_review_38_test_support qs_review_38_warnings qs_review_38_options
   )
   set_property(GLOBAL APPEND PROPERTY PROJECT_TEST_TARGETS ${target})
   gtest_discover_tests(${target} DISCOVERY_MODE PRE_TEST TEST_FILTER "-*Stress.*:*Stress/*.*")
@@ -143,11 +143,11 @@ function(project_add_app)
     file(GLOB_RECURSE sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
   endif()
   add_executable(${arg_NAME} ${sources})
-  target_link_libraries(${arg_NAME} PRIVATE ${arg_DEPS} myproj_warnings myproj_options)
+  target_link_libraries(${arg_NAME} PRIVATE ${arg_DEPS} qs_review_38_warnings qs_review_38_options)
 endfunction()
 
 # project_add_benchmark(MODULE <n> [DEPS ...] [SOURCES ...])
-# Creates <n>_benchmarks from the .cpp files under benchmarks/<n>/, linked to myproj::<n> and
+# Creates <n>_benchmarks from the .cpp files under benchmarks/<n>/, linked to qs_review_38::<n> and
 # the bench support main. The run_benchmarks target runs every one of them. A CTest test labeled
 # bench runs each benchmark once, so a benchmark that crashes fails ctest --preset bench.
 function(project_add_benchmark)
@@ -155,7 +155,7 @@ function(project_add_benchmark)
   if(arg_UNPARSED_ARGUMENTS)
     message(FATAL_ERROR "project_add_benchmark: unknown arguments: ${arg_UNPARSED_ARGUMENTS}")
   endif()
-  if(NOT TARGET myproj::${arg_MODULE})
+  if(NOT TARGET qs_review_38::${arg_MODULE})
     message(FATAL_ERROR "project_add_benchmark: no module '${arg_MODULE}' under libs/")
   endif()
 
@@ -168,9 +168,14 @@ function(project_add_benchmark)
   add_executable(${target} ${sources})
   target_link_libraries(
     ${target}
-    PRIVATE myproj::${arg_MODULE} ${arg_DEPS} myproj_bench_support myproj_warnings myproj_options
+    PRIVATE
+      qs_review_38::${arg_MODULE}
+      ${arg_DEPS}
+      qs_review_38_bench_support
+      qs_review_38_warnings
+      qs_review_38_options
   )
-  set_property(GLOBAL APPEND PROPERTY MYPROJ_BENCHMARKS ${target})
+  set_property(GLOBAL APPEND PROPERTY QS_REVIEW_38_BENCHMARKS ${target})
 
   add_test(NAME ${target}.RunsOnce COMMAND ${target} --benchmark_min_time=1x)
   set_tests_properties(${target}.RunsOnce PROPERTIES LABELS bench)
@@ -180,7 +185,7 @@ endfunction()
 # so the percentiles have samples, and writes <binary dir>/bench/<target>.json.
 # Call after every project_add_benchmark.
 function(project_add_benchmark_run_target)
-  get_property(targets GLOBAL PROPERTY MYPROJ_BENCHMARKS)
+  get_property(targets GLOBAL PROPERTY QS_REVIEW_38_BENCHMARKS)
   set(out_dir "${PROJECT_BINARY_DIR}/bench")
   set(
     commands
@@ -239,18 +244,18 @@ function(project_add_fuzz_target)
     set(sources "${CMAKE_CURRENT_SOURCE_DIR}/${arg_NAME}.cpp")
   endif()
   add_executable(${arg_NAME} ${sources})
-  target_link_libraries(${arg_NAME} PRIVATE ${arg_DEPS} myproj_warnings myproj_options)
+  target_link_libraries(${arg_NAME} PRIVATE ${arg_DEPS} qs_review_38_warnings qs_review_38_options)
   # PROJECT_BUILD_FUZZ gives every internal target fuzzer-no-link; only a harness links the driver.
   target_compile_options(${arg_NAME} PRIVATE -fsanitize=fuzzer)
   target_link_options(${arg_NAME} PRIVATE -fsanitize=fuzzer)
   if(APPLE)
     # Apple ld rejects some harness objects that combine this check with fuzzer coverage:
     # "invalid r_symbolnum". The modules under test keep the check. A source option follows
-    # the -fsanitize flags of myproj_options on the command line, so this one wins.
+    # the -fsanitize flags of qs_review_38_options on the command line, so this one wins.
     set_property(SOURCE ${sources} APPEND PROPERTY COMPILE_OPTIONS -fno-sanitize=function)
   endif()
-  set_target_properties(${arg_NAME} PROPERTIES MYPROJ_FUZZ_SEEDS "${seeds}")
-  set_property(GLOBAL APPEND PROPERTY MYPROJ_FUZZ_TARGETS ${arg_NAME})
+  set_target_properties(${arg_NAME} PROPERTIES QS_REVIEW_38_FUZZ_SEEDS "${seeds}")
+  set_property(GLOBAL APPEND PROPERTY QS_REVIEW_38_FUZZ_TARGETS ${arg_NAME})
 
   add_test(NAME ${arg_NAME}.ReplaysTheSeedCorpus COMMAND ${arg_NAME} -runs=0 "${seeds}")
   set_tests_properties(${arg_NAME}.ReplaysTheSeedCorpus PROPERTIES LABELS fuzz)
@@ -260,10 +265,10 @@ endfunction()
 # New inputs and crash files go to <binary dir>/fuzz/<target>/, never to the seed corpus.
 # Call after every project_add_fuzz_target.
 function(project_add_fuzz_run_target)
-  get_property(targets GLOBAL PROPERTY MYPROJ_FUZZ_TARGETS)
+  get_property(targets GLOBAL PROPERTY QS_REVIEW_38_FUZZ_TARGETS)
   set(commands "")
   foreach(target IN LISTS targets)
-    get_target_property(seeds ${target} MYPROJ_FUZZ_SEEDS)
+    get_target_property(seeds ${target} QS_REVIEW_38_FUZZ_SEEDS)
     set(out_dir "${PROJECT_BINARY_DIR}/fuzz/${target}")
     list(
       APPEND commands
@@ -293,7 +298,7 @@ endfunction()
 
 # Fails configure when tests/unit/<n> exists without a module <n>. Call after libs/ is added.
 function(project_check_unit_test_dirs)
-  get_property(modules GLOBAL PROPERTY MYPROJ_MODULES)
+  get_property(modules GLOBAL PROPERTY QS_REVIEW_38_MODULES)
   file(GLOB entries LIST_DIRECTORIES true CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/tests/unit/*")
   foreach(entry IN LISTS entries)
     get_filename_component(name "${entry}" NAME)

@@ -4,9 +4,10 @@
 
 #include <string>
 
-namespace myproj::core {
+namespace qs_review_38::core {
 
-// Returns "myproj <version> (<short commit>)", with "-dirty" after the commit for local changes.
+// Returns "qs_review_38 <version> (<short commit>)", with "-dirty" after the commit for local
+// changes.
 [[nodiscard]] std::string version_banner();
 
-} // namespace myproj::core
+} // namespace qs_review_38::core

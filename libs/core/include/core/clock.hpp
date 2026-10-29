@@ -5,7 +5,7 @@
 #include <chrono>
 #include <concepts>
 
-namespace myproj::core {
+namespace qs_review_38::core {
 
 // A source of monotonic time, measured from an arbitrary but fixed epoch.
 template <typename T>
@@ -40,4 +40,4 @@ private:
     std::chrono::nanoseconds start_;
 };
 
-} // namespace myproj::core
+} // namespace qs_review_38::core

@@ -5,7 +5,7 @@
 #include <string>
 #include <string_view>
 
-namespace myproj::test_support {
+namespace qs_review_38::test_support {
 
 // An input line for parser::parse_line: key=value fields separated by one blank.
 class LineBuilder {
@@ -22,4 +22,4 @@ private:
     std::string line_;
 };
 
-} // namespace myproj::test_support
+} // namespace qs_review_38::test_support

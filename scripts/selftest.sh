@@ -142,9 +142,9 @@ link_installed_consumer() {
     cat >"${consumer}/CMakeLists.txt" <<'EOF'
 cmake_minimum_required(VERSION 3.28)
 project(Consumer LANGUAGES CXX)
-find_package(MyProj REQUIRED)
+find_package(QsReview38 REQUIRED)
 add_executable(consumer main.cpp)
-target_link_libraries(consumer PRIVATE MyProj::core)
+target_link_libraries(consumer PRIVATE QsReview38::core)
 EOF
     write_consumer_main "${consumer}"
     configure_consumer "${consumer}" "${consumer}/build" "${src}" -DCMAKE_PREFIX_PATH="${prefix}"
@@ -156,17 +156,17 @@ EOF
 write_consumer_main() {
     cat >"$1/main.cpp" <<'EOF'
 #include <core/counter.hpp>
-#include <myproj/version.hpp>
+#include <qs_review_38/version.hpp>
 
 #include <cstdio>
 
 int main() {
     // An old-style cast and an unused variable: warnings the project's own policy would reject.
     int unused = (int)2.5;
-    myproj::core::Counter counter;
+    qs_review_38::core::Counter counter;
     counter.add(42);
     std::printf("%lld %.*s\n", static_cast<long long>(counter.value()),
-                static_cast<int>(myproj::version_string.size()), myproj::version_string.data());
+                static_cast<int>(qs_review_38::version_string.size()), qs_review_38::version_string.data());
     return 0;
 }
 EOF
@@ -194,12 +194,12 @@ case_consumer_isolation() {
 cmake_minimum_required(VERSION 3.28)
 project(Consumer LANGUAGES CXX)
 include(FetchContent)
-FetchContent_Declare(MyProj SOURCE_DIR "${src}")
-FetchContent_MakeAvailable(MyProj)
+FetchContent_Declare(QsReview38 SOURCE_DIR "${src}")
+FetchContent_MakeAvailable(QsReview38)
 enable_testing()
 add_executable(consumer main.cpp)
 target_compile_options(consumer PRIVATE -Wall -Wextra)
-target_link_libraries(consumer PRIVATE myproj::core)
+target_link_libraries(consumer PRIVATE qs_review_38::core)
 install(TARGETS consumer)
 EOF
     write_consumer_main "${consumer}"
@@ -229,7 +229,7 @@ EOF
         echo "the consumer build registered the project's tests"
         return 1
     fi
-    if [ -n "$(find "${build}" -name myproj_cli -type f)" ]; then
+    if [ -n "$(find "${build}" -name qs_review_38_cli -type f)" ]; then
         echo "the consumer build built the project's apps"
         return 1
     fi
@@ -250,12 +250,12 @@ case_version_header() {
     copy_tree "${src}"
     commit="$(git -C "${root}" rev-parse HEAD)"
     configure_dev "${src}" -DPROJECT_BUILD_TESTS=OFF
-    (cd "${src}" && cmake --build --preset dev --target myproj_cli)
-    output="$("${src}/build/dev/bin/myproj_cli" </dev/null)"
+    (cd "${src}" && cmake --build --preset dev --target qs_review_38_cli)
+    output="$("${src}/build/dev/bin/qs_review_38_cli" </dev/null)"
     echo "${output}"
-    # The CLI prints "myproj <version> (<short commit>[-dirty])" on its first line.
+    # The CLI prints "qs_review_38 <version> (<short commit>[-dirty])" on its first line.
     local short
-    short="$(sed -n '1s/^myproj [^ ]* (\([0-9a-f]*\).*/\1/p' <<<"${output}")"
+    short="$(sed -n '1s/^qs_review_38 [^ ]* (\([0-9a-f]*\).*/\1/p' <<<"${output}")"
     if [ -z "${short}" ] || [[ "${commit}" != "${short}"* ]]; then
         echo "expected a prefix of ${commit}, got '${short}'"
         return 1
@@ -333,9 +333,9 @@ case_profile_symbols() {
     copy_tree "${src}"
     build="${src}/build/profile"
     (cd "${src}" && cmake --preset profile -DVCPKG_INSTALLED_DIR="${vcpkg_installed}" -DPROJECT_BUILD_TESTS=OFF)
-    (cd "${src}" && cmake --build --preset profile --target myproj_cli)
-    if ! has_debug_info "${build}/bin/myproj_cli" main.cpp; then
-        echo "the profile build of myproj_cli has no debug information for main.cpp"
+    (cd "${src}" && cmake --build --preset profile --target qs_review_38_cli)
+    if ! has_debug_info "${build}/bin/qs_review_38_cli" main.cpp; then
+        echo "the profile build of qs_review_38_cli has no debug information for main.cpp"
         return 1
     fi
     [ -n "$(own_compile_commands "${build}")" ]
@@ -345,8 +345,8 @@ case_profile_symbols() {
             return 1
         fi
     done < <(own_compile_commands "${build}")
-    if ninja -C "${build}" -t commands myproj_cli | tail -n 1 | grep -q -- "-flto"; then
-        echo "the profile build links myproj_cli with LTO, which hides inlined frames from perf"
+    if ninja -C "${build}" -t commands qs_review_38_cli | tail -n 1 | grep -q -- "-flto"; then
+        echo "the profile build links qs_review_38_cli with LTO, which hides inlined frames from perf"
         return 1
     fi
 }
@@ -356,18 +356,18 @@ case_release_lto() {
     copy_tree "${src}"
     build="${src}/build/release"
     (cd "${src}" && cmake --preset release -DVCPKG_INSTALLED_DIR="${vcpkg_installed}" -DPROJECT_BUILD_TESTS=OFF)
-    (cd "${src}" && cmake --build --preset release --target myproj_cli)
+    (cd "${src}" && cmake --build --preset release --target qs_review_38_cli)
     if ! grep -Eq '^CMAKE_INTERPROCEDURAL_OPTIMIZATION(:[A-Z]+)?=ON$' "${build}/CMakeCache.txt"; then
         grep CMAKE_INTERPROCEDURAL_OPTIMIZATION "${build}/CMakeCache.txt" || true
         echo "the release cache does not turn CMAKE_INTERPROCEDURAL_OPTIMIZATION on"
         return 1
     fi
-    ninja -C "${build}" -t commands myproj_cli | tail -n 1 | tee "${work}/release_lto.link"
+    ninja -C "${build}" -t commands qs_review_38_cli | tail -n 1 | tee "${work}/release_lto.link"
     if ! grep -q -- "-flto" "${work}/release_lto.link"; then
-        echo "the release link line of myproj_cli has no -flto"
+        echo "the release link line of qs_review_38_cli has no -flto"
         return 1
     fi
-    echo "a=1" | "${build}/bin/myproj_cli"
+    echo "a=1" | "${build}/bin/qs_review_38_cli"
     # A consumer that links without LTO must still link the installed LTO archives.
     cmake --install "${build}" --prefix "${work}/release_lto-prefix"
     link_installed_consumer "${src}" "${work}/release_lto-prefix" "${work}/release_lto-consumer"
@@ -383,27 +383,27 @@ case_release_inline() {
     local src="${work}/release_inline" main preset build calls
     copy_tree "${src}"
     # fmt::getpagesize is a few instructions around sysconf, compiled into libfmt.a, not a header.
-    main="${src}/apps/myproj_cli/main.cpp"
+    main="${src}/apps/qs_review_38_cli/main.cpp"
     { echo '#include <fmt/os.h>' && cat "${main}"; } >"${main}.new" && mv "${main}.new" "${main}"
     sed -i.orig 's/^\(int main(.*) {\)$/\1 if (argc > 99) { return static_cast<int>(fmt::getpagesize()); }/' "${main}"
-    sed -i.orig 's|DEPS myproj::core myproj::parser|& fmt::fmt|' "${src}/apps/myproj_cli/CMakeLists.txt"
+    sed -i.orig 's|DEPS qs_review_38::core qs_review_38::parser|& fmt::fmt|' "${src}/apps/qs_review_38_cli/CMakeLists.txt"
     grep -q 'fmt::getpagesize' "${main}"
-    grep -q 'fmt::fmt' "${src}/apps/myproj_cli/CMakeLists.txt"
+    grep -q 'fmt::fmt' "${src}/apps/qs_review_38_cli/CMakeLists.txt"
     for preset in release release-gcc; do
         build="${src}/build/${preset}"
         (cd "${src}" && cmake --preset "${preset}" -DPROJECT_BUILD_TESTS=OFF \
             -DVCPKG_INSTALLED_DIR="${work}/release_inline-${preset}-installed")
-        (cd "${src}" && cmake --build --preset "${preset}" --target myproj_cli)
-        calls="$(calls_in_main "${build}/bin/myproj_cli")"
+        (cd "${src}" && cmake --build --preset "${preset}" --target qs_review_38_cli)
+        calls="$(calls_in_main "${build}/bin/qs_review_38_cli")"
         echo "${calls}"
         # Their bodies may still call larger functions, such as fmt::vformat; those stay calls.
         if grep -E 'version_banner|getpagesize' <<<"${calls}"; then
-            echo "${preset}: main of myproj_cli still calls version_banner or fmt::getpagesize, so LTO did not cross their archives"
+            echo "${preset}: main of qs_review_38_cli still calls version_banner or fmt::getpagesize, so LTO did not cross their archives"
             return 1
         fi
         # The probe's body must be there, or a missing call proves nothing.
         if ! grep -q 'sysconf' <<<"${calls}"; then
-            echo "${preset}: main of myproj_cli does not call sysconf, so the fmt::getpagesize probe is gone"
+            echo "${preset}: main of qs_review_38_cli does not call sysconf, so the fmt::getpagesize probe is gone"
             return 1
         fi
     done
@@ -584,11 +584,11 @@ case_lint_naming() {
     cat >"${src}/libs/core/src/lint_probe.cpp" <<'EOF'
 // Selftest: a function named in camelCase, which D13 forbids.
 // Nothing calls it; only the lint target reads it.
-namespace myproj::core {
+namespace qs_review_38::core {
 
 int lintProbe() { return 0; }
 
-} // namespace myproj::core
+} // namespace qs_review_38::core
 EOF
     if make -C "${src}" --no-print-directory lint >"${work}/lint_naming.out" 2>&1; then
         cat "${work}/lint_naming.out"
@@ -626,9 +626,9 @@ case_format_roundtrip() {
     copy_tree "${src}"
     make -C "${src}" --no-print-directory format-check
     # One C++ line with the pointer bound to the name, and one CMake line indented by five spaces.
-    sed -i.orig 's/^\(int main(.*) {\)$/\1 int *probe = nullptr; (void)probe;/' "${src}/apps/myproj_cli/main.cpp"
+    sed -i.orig 's/^\(int main(.*) {\)$/\1 int *probe = nullptr; (void)probe;/' "${src}/apps/qs_review_38_cli/main.cpp"
     sed -i.orig 's/^  project_add_lint_target()$/     project_add_lint_target()/' "${src}/CMakeLists.txt"
-    rm "${src}/apps/myproj_cli/main.cpp.orig" "${src}/CMakeLists.txt.orig"
+    rm "${src}/apps/qs_review_38_cli/main.cpp.orig" "${src}/CMakeLists.txt.orig"
     if make -C "${src}" --no-print-directory format-check >"${work}/format_roundtrip.out" 2>&1; then
         cat "${work}/format_roundtrip.out"
         echo "make format-check passed a misformatted C++ and CMake line"
@@ -639,7 +639,7 @@ case_format_roundtrip() {
     grep -q "CMakeLists.txt" "${work}/format_roundtrip.out"
     make -C "${src}" --no-print-directory format
     make -C "${src}" --no-print-directory format-check
-    grep -q "int\* probe = nullptr;" "${src}/apps/myproj_cli/main.cpp"
+    grep -q "int\* probe = nullptr;" "${src}/apps/qs_review_38_cli/main.cpp"
     grep -q "^  project_add_lint_target()$" "${src}/CMakeLists.txt"
 }
 
@@ -1048,7 +1048,7 @@ case_init_rename() {
     if [ -e "${src}/.github/workflows/init.yaml" ]; then first_run=1; fi
     # Mixed case and hyphens, as a repository name has them.
     "${src}/scripts/init-project.sh" "Long-Enough-To-Reflow-Probe-$$"
-    if grep -rnI --exclude-dir=.git -e myproj -e MyProj -e MYPROJ "${src}"; then
+    if grep -rnI --exclude-dir=.git -e qs_review_38 -e QsReview38 -e QS_REVIEW_38 "${src}"; then
         echo "init-project.sh left the old name in the lines above"
         return 1
     fi

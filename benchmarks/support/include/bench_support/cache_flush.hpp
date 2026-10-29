@@ -4,7 +4,7 @@
 
 #include <cstddef>
 
-namespace myproj::bench_support {
+namespace qs_review_38::bench_support {
 
 // Larger than the last-level cache of current desktop and server CPUs.
 inline constexpr std::size_t flush_bytes = std::size_t{64} << 20U;
@@ -13,4 +13,4 @@ inline constexpr std::size_t flush_bytes = std::size_t{64} << 20U;
 // between state.PauseTiming() and state.ResumeTiming(), with iterations that take longer.
 void flush_cache();
 
-} // namespace myproj::bench_support
+} // namespace qs_review_38::bench_support

@@ -4,7 +4,7 @@ A module is a directory under `libs/`, an app one under `apps/`. Neither touches
 
 ## Add a module
 
-When you want a new library `myproj::net` with a namespace stub and one passing unit test:
+When you want a new library `qs_review_38::net` with a namespace stub and one passing unit test:
 
 ```bash
 scripts/new-module.sh net
@@ -14,14 +14,14 @@ You should see `libs/net/` and `tests/unit/net/`. The next `make dev` builds and
 To link another module, edit the one call in `libs/net/CMakeLists.txt`:
 
 ```cmake
-project_add_module(NAME net PUBLIC_DEPS myproj::core)
+project_add_module(NAME net PUBLIC_DEPS qs_review_38::core)
 ```
 
 A module with no `.cpp` under `src/` is header-only. Every option is in the [helper API](../reference/helpers.md).
 
 ## Add an app
 
-When you want a new executable `build/<preset>/bin/tool` that links `myproj::core`:
+When you want a new executable `build/<preset>/bin/tool` that links `qs_review_38::core`:
 
 ```bash
 scripts/new-app.sh tool

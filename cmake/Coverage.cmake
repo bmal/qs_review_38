@@ -1,4 +1,4 @@
-# Coverage: ENABLE_COVERAGE instruments every internal target through myproj_options, and the
+# Coverage: ENABLE_COVERAGE instruments every internal target through qs_review_38_options, and the
 # coverage target writes coverage/lcov.info, from llvm-cov on Clang and from gcov and lcov on GCC.
 
 function(project_configure_coverage)
@@ -12,8 +12,8 @@ function(project_configure_coverage)
   else()
     message(FATAL_ERROR "ENABLE_COVERAGE needs Clang or GCC, not ${CMAKE_CXX_COMPILER_ID}.")
   endif()
-  target_compile_options(myproj_options INTERFACE ${flags})
-  target_link_options(myproj_options INTERFACE ${flags})
+  target_compile_options(qs_review_38_options INTERFACE ${flags})
+  target_link_options(qs_review_38_options INTERFACE ${flags})
 endfunction()
 
 # Call after every test target exists: the coverage target builds them, runs them, and reports.

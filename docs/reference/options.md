@@ -23,4 +23,4 @@ Set on the configure command, as in `cmake --preset dev -DPROJECT_LINKER=default
 | `ENABLE_COVERAGE` | `ON` or `OFF`; adds the `coverage` target | `ON` in the coverage presets |
 | `VCPKG_ROOT` | Environment variable naming a vcpkg checkout | `.vcpkg/` from `scripts/bootstrap.sh` |
 
-Warnings and options reach every internal target through the `myproj_warnings` and `myproj_options` interface targets in `cmake/CompilerPolicy.cmake`.
+Warnings and options reach every internal target through the `qs_review_38_warnings` and `qs_review_38_options` interface targets in `cmake/CompilerPolicy.cmake`.

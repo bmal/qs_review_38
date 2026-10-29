@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <expected>
 
-namespace myproj::core {
+namespace qs_review_38::core {
 
 using test_support::CounterBuilder;
 
@@ -64,4 +64,4 @@ TEST(Counter, SubtractDoesNotAllocate) {
     EXPECT_EQ(result, 7);
 }
 
-} // namespace myproj::core
+} // namespace qs_review_38::core

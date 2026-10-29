@@ -8,7 +8,7 @@
 #include <cstddef>
 #include <vector>
 
-namespace myproj::bench_support {
+namespace qs_review_38::bench_support {
 namespace {
 
 template <std::size_t percent>
@@ -30,4 +30,4 @@ void add_percentiles(benchmark::Benchmark* bench) {
     bench->ComputeStatistics("p99", percentile<99>);
 }
 
-} // namespace myproj::bench_support
+} // namespace qs_review_38::bench_support

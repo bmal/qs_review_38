@@ -1,4 +1,4 @@
-// Mechanism: the definitions of a stateful type, compiled once into myproj_core.
+// Mechanism: the definitions of a stateful type, compiled once into qs_review_38_core.
 // Only subtract can fail, and it reports failure without touching the state.
 #include "core/counter.hpp"
 
@@ -6,7 +6,7 @@
 #include <expected>
 #include <string_view>
 
-namespace myproj::core {
+namespace qs_review_38::core {
 
 std::string_view describe(CounterError error) noexcept {
     switch (error) {
@@ -30,4 +30,4 @@ std::uint64_t Counter::value() const noexcept { return value_; }
 
 void Counter::reset() noexcept { value_ = 0; }
 
-} // namespace myproj::core
+} // namespace qs_review_38::core

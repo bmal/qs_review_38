@@ -23,7 +23,7 @@
 | Namespaces, functions, variables, parameters, constants | `snake_case` | `echo_fields`, `max_depth` |
 | Classes, structs, enums, enum values, aliases, concepts, template type parameters | `CamelCase` | `OutputSink`, `Clock` |
 | Private and protected members | `snake_case_` | `count_` |
-| Macros | `MYPROJ_UPPER_CASE` | `MYPROJ_SKIP_UNDER_SANITIZER` |
+| Macros | `QS_REVIEW_38_UPPER_CASE` | `QS_REVIEW_38_SKIP_UNDER_SANITIZER` |
 | Test suites and tests | `CamelCase` sentences; a suite ending in `Stress` is a stress test | `Counter.AddAccumulates` |
 | Files | `snake_case.hpp` and `.cpp`; tests `test_<subject>.cpp` | `test_counter.cpp` |
 

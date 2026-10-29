@@ -6,7 +6,7 @@
 
 // NOLINTNEXTLINE(bugprone-exception-escape): an escaping exception should terminate and dump core.
 int main(int argc, char** argv) {
-    benchmark::AddCustomContext("myproj_version", myproj::core::version_banner());
+    benchmark::AddCustomContext("qs_review_38_version", qs_review_38::core::version_banner());
     benchmark::Initialize(&argc, argv);
     if (benchmark::ReportUnrecognizedArguments(argc, argv)) {
         return 1;

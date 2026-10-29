@@ -12,7 +12,7 @@
 #include <string_view>
 #include <utility>
 
-namespace myproj::core {
+namespace qs_review_38::core {
 
 namespace {
 
@@ -74,4 +74,4 @@ TEST(EchoFieldsStress, EchoesAMillionFields) {
     EXPECT_EQ(totals->fields, 4 * line_count);
 }
 
-} // namespace myproj::core
+} // namespace qs_review_38::core

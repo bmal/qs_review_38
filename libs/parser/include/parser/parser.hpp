@@ -9,7 +9,7 @@
 #include <string_view>
 #include <vector>
 
-namespace myproj::parser {
+namespace qs_review_38::parser {
 
 // One key=value token. Both views point into the parsed line.
 struct Field {
@@ -69,4 +69,4 @@ parse_line(std::string_view line) {
     return fields;
 }
 
-} // namespace myproj::parser
+} // namespace qs_review_38::parser

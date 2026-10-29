@@ -1,4 +1,4 @@
-# Install, version header, and packaging. Non-INTERNAL modules join the MyProjTargets export set
+# Install, version header, and packaging. Non-INTERNAL modules join the QsReview38Targets export set
 # through project_add_module; project_install_package writes the package files and sets up CPack.
 # All install rules need PROJECT_INSTALL, which is ON only when this is the top-level project.
 
@@ -8,7 +8,7 @@ include(CMakePackageConfigHelpers)
 
 set(PROJECT_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
 
-# Called by project_add_module: installs the module and its public headers as MyProj::<name>.
+# Called by project_add_module: installs the module and its public headers as QsReview38::<name>.
 function(_project_install_module name target include_dir)
   set_target_properties(${target} PROPERTIES EXPORT_NAME ${name})
   install(
@@ -22,8 +22,8 @@ function(_project_install_module name target include_dir)
 endfunction()
 
 # project_add_version_header(<module>)
-# Generates <build>/generated/include/myproj/version.hpp from project(VERSION) and the git commit
-# at configure time, and makes it part of myproj::<module> and of its installed headers.
+# Generates <build>/generated/include/qs_review_38/version.hpp from project(VERSION) and the git commit
+# at configure time, and makes it part of qs_review_38::<module> and of its installed headers.
 function(project_add_version_header module)
   find_package(Git QUIET)
   set(PROJECT_GIT_COMMIT "unknown")
@@ -61,18 +61,18 @@ function(project_add_version_header module)
   set(generated_dir "${PROJECT_BINARY_DIR}/generated/include")
   configure_file(
     "${PROJECT_SOURCE_DIR}/cmake/templates/version.hpp.in"
-    "${generated_dir}/myproj/version.hpp"
+    "${generated_dir}/qs_review_38/version.hpp"
     @ONLY
   )
 
-  set(target myproj_${module})
+  set(target qs_review_38_${module})
   get_target_property(type ${target} TYPE)
   if(type STREQUAL "INTERFACE_LIBRARY")
     target_include_directories(${target} INTERFACE $<BUILD_INTERFACE:${generated_dir}>)
   else()
     target_include_directories(${target} PUBLIC $<BUILD_INTERFACE:${generated_dir}>)
   endif()
-  get_target_property(internal ${target} MYPROJ_INTERNAL)
+  get_target_property(internal ${target} QS_REVIEW_38_INTERNAL)
   if(PROJECT_INSTALL AND NOT internal)
     install(DIRECTORY "${generated_dir}/" DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
   endif()
@@ -81,17 +81,17 @@ endfunction()
 # Writes the package config, version, and targets files, and configures CPack. Call last.
 function(project_install_package)
   # An installed module cannot reach a module that is not installed.
-  get_property(modules GLOBAL PROPERTY MYPROJ_MODULES)
+  get_property(modules GLOBAL PROPERTY QS_REVIEW_38_MODULES)
   foreach(module IN LISTS modules)
-    get_target_property(internal myproj_${module} MYPROJ_INTERNAL)
+    get_target_property(internal qs_review_38_${module} QS_REVIEW_38_INTERNAL)
     if(internal)
       continue()
     endif()
-    get_target_property(deps myproj_${module} INTERFACE_LINK_LIBRARIES)
-    get_target_property(private_deps myproj_${module} LINK_LIBRARIES)
+    get_target_property(deps qs_review_38_${module} INTERFACE_LINK_LIBRARIES)
+    get_target_property(private_deps qs_review_38_${module} LINK_LIBRARIES)
     foreach(dep IN LISTS deps private_deps)
-      if(dep MATCHES "^myproj(::|_)([a-z0-9_]+)$" AND CMAKE_MATCH_2 IN_LIST modules)
-        get_target_property(dep_internal myproj_${CMAKE_MATCH_2} MYPROJ_INTERNAL)
+      if(dep MATCHES "^qs_review_38(::|_)([a-z0-9_]+)$" AND CMAKE_MATCH_2 IN_LIST modules)
+        get_target_property(dep_internal qs_review_38_${CMAKE_MATCH_2} QS_REVIEW_38_INTERNAL)
         if(dep_internal)
           message(
             FATAL_ERROR

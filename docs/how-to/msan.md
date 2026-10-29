@@ -8,7 +8,7 @@ When you first use MSan on a machine, or after a Clang upgrade, build the instru
 scripts/build-msan-libcxx.sh
 ```
 
-It takes a few minutes and prints its directory under `~/.cache/myproj/msan-libcxx/`; a second run returns at once.
+It takes a few minutes and prints its directory under `~/.cache/qs_review_38/msan-libcxx/`; a second run returns at once.
 
 When you want to check a change for reads of memory that was never written:
 

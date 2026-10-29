@@ -1,7 +1,7 @@
 # Cut a release
 
 A tag `v<version>` whose version equals `project(VERSION)` in `CMakeLists.txt` becomes a GitHub release.
-`.github/workflows/release.yaml` builds and tests `release`, runs CPack, and attaches `MyProj-<version>-Linux.tar.gz`.
+`.github/workflows/release.yaml` builds and tests `release`, runs CPack, and attaches `QsReview38-<version>-Linux.tar.gz`.
 
 When you want to check a tag before you push it:
 

@@ -10,7 +10,7 @@
 #include <string_view>
 #include <vector>
 
-namespace myproj::parser {
+namespace qs_review_38::parser {
 
 TEST(ParseLine, SplitsBlankSeparatedFields) {
     const std::string line = test_support::LineBuilder{}.field("a", "1").field("b", "x=y").build();
@@ -74,4 +74,4 @@ INSTANTIATE_TEST_SUITE_P(
 
 } // namespace
 
-} // namespace myproj::parser
+} // namespace qs_review_38::parser

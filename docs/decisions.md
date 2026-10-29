@@ -70,7 +70,7 @@ Narrow choices left to single tickets are appended below the entry they refine.
 
 ### D9. Warnings and options interface targets
 
-- Decision: `myproj_warnings` and `myproj_options`, linked privately by every internal target, tests included. `-Werror` is on when top level, with one option to disable, never for consumers.
+- Decision: `qs_review_38_warnings` and `qs_review_38_options`, linked privately by every internal target, tests included. `-Werror` is on when top level, with one option to disable, never for consumers.
 - Why: the library is not the least-checked code, and a new compiler never blocks you.
 - Rejected: propagating flags to consumers; exempting tests.
 
@@ -100,7 +100,7 @@ Narrow choices left to single tickets are appended below the entry they refine.
 
 #### D10.4. Fuzzer coverage comes from PROJECT_BUILD_FUZZ
 
-- Decision: `PROJECT_SANITIZER` names sanitizers only; the `fuzz` preset sets it to `address;undefined`, and `PROJECT_BUILD_FUZZ` adds `fuzzer-no-link` to `myproj_options`.
+- Decision: `PROJECT_SANITIZER` names sanitizers only; the `fuzz` preset sets it to `address;undefined`, and `PROJECT_BUILD_FUZZ` adds `fuzzer-no-link` to `qs_review_38_options`.
 - Why: every value of `PROJECT_SANITIZER` is a sanitizer, and fuzzing without a sanitizer still gets coverage.
 - Rejected: `fuzzer-no-link` as a `PROJECT_SANITIZER` value.
 
@@ -112,7 +112,7 @@ Narrow choices left to single tickets are appended below the entry they refine.
 
 #### D10.6. The MSan libc++ follows the project's Clang
 
-- Decision: `scripts/build-msan-libcxx.sh` builds libc++ for the Clang the toolchain picks, into `~/.cache/myproj/msan-libcxx/<full Clang version>/`. The `msan` preset exists on every host and fails configure in one sentence on macOS, on GCC, or when that build is missing. The selftest case reports itself skipped on macOS and on Linux without the build.
+- Decision: `scripts/build-msan-libcxx.sh` builds libc++ for the Clang the toolchain picks, into `~/.cache/qs_review_38/msan-libcxx/<full Clang version>/`. The `msan` preset exists on every host and fails configure in one sentence on macOS, on GCC, or when that build is missing. The selftest case reports itself skipped on macOS and on Linux without the build.
 - Why: libc++ headers must match the compiler that includes them, and a hidden preset would fail with CMake's generic "disabled preset" message.
 - Rejected: a directory per Clang major, which a point upgrade would silently reuse; a preset condition that hides `msan` on macOS.
 
@@ -136,7 +136,7 @@ Narrow choices left to single tickets are appended below the entry they refine.
 
 #### D11.1. Checks disabled beyond the aliases
 
-- Decision: off are `modernize-use-trailing-return-type`, `readability-magic-numbers`, `readability-identifier-length`, `portability-avoid-pragma-once`, `cppcoreguidelines-owning-memory`, `cppcoreguidelines-pro-bounds-array-to-pointer-decay`, and `cppcoreguidelines-pro-bounds-avoid-unchecked-container-access`. Cognitive complexity fails above 25 and ignores macros. `cppcoreguidelines-macro-usage` allows `MYPROJ_` macros. Pointer arithmetic, `reinterpret_cast`, and swappable parameters stay on.
+- Decision: off are `modernize-use-trailing-return-type`, `readability-magic-numbers`, `readability-identifier-length`, `portability-avoid-pragma-once`, `cppcoreguidelines-owning-memory`, `cppcoreguidelines-pro-bounds-array-to-pointer-decay`, and `cppcoreguidelines-pro-bounds-avoid-unchecked-container-access`. Cognitive complexity fails above 25 and ignores macros. `cppcoreguidelines-macro-usage` allows `QS_REVIEW_38_` macros. Pointer arithmetic, `reinterpret_cast`, and swappable parameters stay on.
 - Why: each disabled check fights D13, a C API boundary, idiomatic short names, or every `operator[]`, and stdlib hardening plus ASan already catch out-of-bounds indexing at run time. The checks that stay on mark wire parsing and price-for-quantity swaps, which deserve a reason in review.
 - Rejected: the ticket's list alone, which needs a `NOLINT` on every index and every header; magic numbers on in `libs/` only, which needs a second config file.
 
@@ -297,7 +297,7 @@ Narrow choices left to single tickets are appended below the entry they refine.
 
 #### D22.1. Frame pointers and benchmark dependencies are opt-in
 
-- Decision: `PROJECT_FRAME_POINTERS` adds `-fno-omit-frame-pointer` through `myproj_options`; `bench` turns it on. Google Benchmark is the vcpkg manifest feature `benchmarks`, installed only when `PROJECT_BUILD_BENCHMARKS` is on.
+- Decision: `PROJECT_FRAME_POINTERS` adds `-fno-omit-frame-pointer` through `qs_review_38_options`; `bench` turns it on. Google Benchmark is the vcpkg manifest feature `benchmarks`, installed only when `PROJECT_BUILD_BENCHMARKS` is on.
 - Why: `bench` is `release` plus one flag, and no other preset pays for a dependency it never links.
 - Rejected: a separate flag list for `bench`; Google Benchmark as a default dependency.
 
@@ -309,7 +309,7 @@ Narrow choices left to single tickets are appended below the entry they refine.
 
 ### D23. Sample code, option C
 
-- Decision: `core` compiled, `parser` header-only and exception-free, one CLI app, one example per test kind, a mock at an edge in integration tests. Two-line purpose header per file. Placeholders `myproj` and `MyProj`.
+- Decision: `core` compiled, `parser` header-only and exception-free, one CLI app, one example per test kind, a mock at an edge in integration tests. Two-line purpose header per file. Placeholders `qs_review_38` and `QsReview38`.
 - Why: every sample file demonstrates one mechanism, so the samples are the documentation.
 - Rejected: none recorded.
 - Owner, 2026-10-29, #41: the CLI calls `parser` itself. It echoes the fields of its arguments before stdin's, and exits 2 on a malformed argument. Rejected: `parser` in `DEPS` with nothing using it; a D23 where the CLI uses `core` only.
@@ -320,7 +320,7 @@ Narrow choices left to single tickets are appended below the entry they refine.
 ### D24. Install, version, packaging
 
 - Decision: standard CMake install modules, one export set, `SameMajorVersion`. Version single-sourced in `project()`. A generated version header with the git hash captured at configure. CPack TGZ. Install smoke covers `find_package` and `FetchContent`.
-- Why: consumers link `MyProj::<module>`, and every app knows which commit is running.
+- Why: consumers link `QsReview38::<module>`, and every app knows which commit is running.
 - Rejected: DEB, RPM, and other CPack generators.
 
 #### D24.1. Install rules only when top level
@@ -416,7 +416,7 @@ Narrow choices left to single tickets are appended below the entry they refine.
 #### D26.2. Init formats what it renames
 
 - Decision: `init-project.sh` ends with `scripts/format.sh` over the tree, on every run. The Init workflow first runs `scripts/bootstrap.sh --format-tools`, which installs only what the pinned clang-format and gersemi need. The selftest case `init_rename` renames to a long name and runs `make format-check` (issue #36).
-- Why: a name longer than `myproj` pushes lines past 100 columns, and the Init commit then fails tier one at `pre-commit run --all-files`.
+- Why: a name longer than `qs_review_38` pushes lines past 100 columns, and the Init commit then fails tier one at `pre-commit run --all-files`.
 - Rejected: running Init in the CI image, which a new repository has not published yet; unpinned formatters from the runner.
 
 #### D26.3. Green in ten minutes means tier one

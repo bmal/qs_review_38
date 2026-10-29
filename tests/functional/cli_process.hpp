@@ -7,7 +7,7 @@
 #include <string_view>
 #include <vector>
 
-namespace myproj::functional {
+namespace qs_review_38::functional {
 
 struct CliRun {
     int exit_code;
@@ -15,9 +15,9 @@ struct CliRun {
     std::string err;
 };
 
-// Runs myproj_cli with args and with input on stdin, and waits for it to exit.
+// Runs qs_review_38_cli with args and with input on stdin, and waits for it to exit.
 // Fails with a message naming the binary when it cannot be started.
 [[nodiscard]] std::expected<CliRun, std::string> run_cli(std::string_view input,
                                                          std::vector<std::string> args = {});
 
-} // namespace myproj::functional
+} // namespace qs_review_38::functional

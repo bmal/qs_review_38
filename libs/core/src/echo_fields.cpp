@@ -11,7 +11,7 @@
 #include <istream>
 #include <string>
 
-namespace myproj::core {
+namespace qs_review_38::core {
 
 std::expected<EchoTotals, EchoError> echo_fields(std::istream& input, OutputSink& sink) {
     Counter fields;
@@ -32,4 +32,4 @@ std::expected<EchoTotals, EchoError> echo_fields(std::istream& input, OutputSink
     return EchoTotals{.lines = line_number, .fields = fields.value()};
 }
 
-} // namespace myproj::core
+} // namespace qs_review_38::core

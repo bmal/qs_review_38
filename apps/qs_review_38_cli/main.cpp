@@ -17,7 +17,7 @@ namespace {
 
 // The console end of the output edge: one "key: value" line per field on
 // stdout.
-class ConsoleSink final : public myproj::core::OutputSink {
+class ConsoleSink final : public qs_review_38::core::OutputSink {
 public:
     void field(std::string_view key, std::string_view value) override {
         std::println("{}: {}", key, value);
@@ -25,12 +25,12 @@ public:
 };
 
 // Echoes the fields of each argument through the sink; false after naming the first malformed one.
-bool echo_arguments(std::span<char* const> args, myproj::core::OutputSink& sink) {
+bool echo_arguments(std::span<char* const> args, qs_review_38::core::OutputSink& sink) {
     for (std::size_t i = 0; i < args.size(); ++i) {
-        const auto fields = myproj::parser::parse_line(args[i]);
+        const auto fields = qs_review_38::parser::parse_line(args[i]);
         if (!fields.has_value()) {
             std::println(stderr, "argument {}: {}", i + 1,
-                         myproj::parser::describe(fields.error().kind));
+                         qs_review_38::parser::describe(fields.error().kind));
             return false;
         }
         for (const auto& field : *fields) {
@@ -45,15 +45,15 @@ bool echo_arguments(std::span<char* const> args, myproj::core::OutputSink& sink)
 // NOLINTNEXTLINE(bugprone-exception-escape): an escaping exception should terminate and dump core.
 int main(int argc, char* argv[]) {
     // std::print needs the Homebrew libc++ on macOS; the system copy lacks it.
-    std::println("{}", myproj::core::version_banner());
+    std::println("{}", qs_review_38::core::version_banner());
 
     ConsoleSink sink;
     if (!echo_arguments(std::span(argv, static_cast<std::size_t>(argc)).subspan(1), sink)) {
         return 2;
     }
-    const myproj::core::SystemClock clock;
-    const myproj::core::Stopwatch stopwatch(clock);
-    const auto totals = myproj::core::echo_fields(std::cin, sink);
+    const qs_review_38::core::SystemClock clock;
+    const qs_review_38::core::Stopwatch stopwatch(clock);
+    const auto totals = qs_review_38::core::echo_fields(std::cin, sink);
     if (!totals.has_value()) {
         std::println(stderr, "line {}, column {}: {}", totals.error().line, totals.error().column,
                      totals.error().message);

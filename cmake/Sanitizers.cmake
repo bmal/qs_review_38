@@ -1,4 +1,4 @@
-# Sanitizer policy: PROJECT_SANITIZER instruments every internal target through myproj_options.
+# Sanitizer policy: PROJECT_SANITIZER instruments every internal target through qs_review_38_options.
 # Dependencies get the same instrumentation from the matching triplet, which the preset selects.
 
 set(
@@ -80,12 +80,12 @@ endif()
 if(_project_sanitize_flags)
   list(JOIN _project_sanitize_flags "," _project_sanitize)
   target_compile_options(
-    myproj_options
+    qs_review_38_options
     INTERFACE -fsanitize=${_project_sanitize} -fno-sanitize-recover=all -fno-omit-frame-pointer
   )
-  target_link_options(myproj_options INTERFACE -fsanitize=${_project_sanitize})
+  target_link_options(qs_review_38_options INTERFACE -fsanitize=${_project_sanitize})
 endif()
 # A MemorySanitizer report then names where the uninitialized value was allocated, not only where it was read.
 if("memory" IN_LIST PROJECT_SANITIZER)
-  target_compile_options(myproj_options INTERFACE -fsanitize-memory-track-origins=2)
+  target_compile_options(qs_review_38_options INTERFACE -fsanitize-memory-track-origins=2)
 endif()

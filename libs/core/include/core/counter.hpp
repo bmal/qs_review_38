@@ -6,7 +6,7 @@
 #include <expected>
 #include <string_view>
 
-namespace myproj::core {
+namespace qs_review_38::core {
 
 enum class CounterError : std::uint8_t { Underflow };
 
@@ -29,4 +29,4 @@ private:
     std::uint64_t value_ = 0;
 };
 
-} // namespace myproj::core
+} // namespace qs_review_38::core

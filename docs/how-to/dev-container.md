@@ -21,13 +21,13 @@ A second volume keeps the vcpkg binary cache and the MemorySanitizer libc++ acro
 When you want to reproduce a Linux failure from the command line, build the image:
 
 ```bash
-docker build -t myproj-dev .
+docker build -t qs_review_38-dev .
 ```
 
 When you want the `dev` workflow on Linux, run it inside the image:
 
 ```bash
-docker run --rm -v "$PWD:/workspaces/myproj" -v /workspaces/myproj/build -w /workspaces/myproj myproj-dev make dev
+docker run --rm -v "$PWD:/workspaces/qs_review_38" -v /workspaces/qs_review_38/build -w /workspaces/qs_review_38 qs_review_38-dev make dev
 ```
 
 ## Change a tool version

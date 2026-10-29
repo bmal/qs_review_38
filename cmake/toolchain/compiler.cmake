@@ -128,7 +128,7 @@ if("memory" IN_LIST PROJECT_SANITIZER OR VCPKG_CXX_FLAGS MATCHES "-fsanitize=mem
     else()
       set(_project_cache "$ENV{HOME}/.cache")
     endif()
-    set(_project_msan_libcxx "${_project_cache}/myproj/msan-libcxx/${CMAKE_MATCH_1}")
+    set(_project_msan_libcxx "${_project_cache}/qs_review_38/msan-libcxx/${CMAKE_MATCH_1}")
     if(NOT EXISTS "${_project_msan_libcxx}/lib/libc++.so")
       message(
         FATAL_ERROR
@@ -152,7 +152,7 @@ if("memory" IN_LIST PROJECT_SANITIZER OR VCPKG_CXX_FLAGS MATCHES "-fsanitize=mem
 endif()
 
 # A port build receives its triplet's flags; a sanitizer triplet instruments dependencies this way.
-# The project's own build never defines these, so the project stays on myproj_options alone.
+# The project's own build never defines these, so the project stays on qs_review_38_options alone.
 if(VCPKG_CXX_FLAGS OR VCPKG_LINKER_FLAGS)
   string(APPEND CMAKE_C_FLAGS_INIT " ${VCPKG_C_FLAGS}")
   string(APPEND CMAKE_CXX_FLAGS_INIT " ${VCPKG_CXX_FLAGS}")

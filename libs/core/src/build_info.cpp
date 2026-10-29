@@ -3,14 +3,15 @@
 #include "core/build_info.hpp"
 
 #include <fmt/format.h>
-#include <myproj/version.hpp>
+#include <qs_review_38/version.hpp>
 
 #include <string>
 
-namespace myproj::core {
+namespace qs_review_38::core {
 
 std::string version_banner() {
-    return fmt::format("myproj {} ({}{})", version_string, git_commit, git_dirty ? "-dirty" : "");
+    return fmt::format("qs_review_38 {} ({}{})", version_string, git_commit,
+                       git_dirty ? "-dirty" : "");
 }
 
-} // namespace myproj::core
+} // namespace qs_review_38::core

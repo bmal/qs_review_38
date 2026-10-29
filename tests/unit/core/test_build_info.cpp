@@ -4,17 +4,17 @@
 
 #include "core/build_info.hpp"
 
-#include <myproj/version.hpp>
+#include <qs_review_38/version.hpp>
 
 #include <string>
 
-namespace myproj::core {
+namespace qs_review_38::core {
 
 TEST(VersionBanner, NamesTheVersionAndCommit) {
     const std::string banner = version_banner();
 
-    EXPECT_TRUE(banner.starts_with("myproj " + std::string(version_string) + " ("));
+    EXPECT_TRUE(banner.starts_with("qs_review_38 " + std::string(version_string) + " ("));
     EXPECT_NE(banner.find(git_commit), std::string::npos);
 }
 
-} // namespace myproj::core
+} // namespace qs_review_38::core

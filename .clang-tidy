@@ -36,7 +36,7 @@ HeaderFilterRegex: "(^|/)(libs|apps|tests|benchmarks)/"
 ExcludeHeaderFilterRegex: "/(vcpkg_installed|\\.vcpkg)/"
 FormatStyle: file
 CheckOptions:
-  cppcoreguidelines-macro-usage.AllowedRegexp: "^MYPROJ_"
+  cppcoreguidelines-macro-usage.AllowedRegexp: "^QS_REVIEW_38_"
   cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor: true
   # Private headers of libc++, libstdc++, glibc, and the macOS SDK with no public mapping, and the
   # glibc stdlib.h that libstdc++'s <cstdlib> reaches by include_next, which declares POSIX names.
@@ -67,4 +67,4 @@ CheckOptions:
   readability-identifier-naming.PrivateMemberSuffix: _
   readability-identifier-naming.ProtectedMemberSuffix: _
   readability-identifier-naming.MacroDefinitionCase: UPPER_CASE
-  readability-identifier-naming.MacroDefinitionPrefix: MYPROJ_
+  readability-identifier-naming.MacroDefinitionPrefix: QS_REVIEW_38_

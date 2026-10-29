@@ -1,13 +1,13 @@
 {
   // The image from the root Dockerfile, with the extensions of .vscode/extensions.json.
-  "name": "myproj",
+  "name": "qs_review_38",
   "build": { "dockerfile": "../Dockerfile", "context": ".." },
   // Not root: on Linux, VS Code gives ubuntu the host user's UID, so the checkout stays theirs.
   "remoteUser": "ubuntu",
   // Container builds and caches live in volumes, so they never collide with the host's build/.
   "mounts": [
-    "source=myproj-build-${devcontainerId},target=${containerWorkspaceFolder}/build,type=volume",
-    "source=myproj-cache,target=/home/ubuntu/.cache,type=volume"
+    "source=qs_review_38-build-${devcontainerId},target=${containerWorkspaceFolder}/build,type=volume",
+    "source=qs_review_38-cache,target=/home/ubuntu/.cache,type=volume"
   ],
   // The debugger needs ptrace, and the sanitizers need to turn off address randomization.
   "runArgs": ["--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined"],

@@ -13,7 +13,7 @@ extern "C" int LLVMFuzzerTestOneInput(const std::uint8_t* data, std::size_t size
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast): bytes in, characters out.
     const std::string_view line(reinterpret_cast<const char*>(data), size);
 
-    const auto fields = myproj::parser::parse_line(line);
+    const auto fields = qs_review_38::parser::parse_line(line);
 
     // Where a part starts in the line; negative or past the end when it points outside it.
     const auto offset = [line](std::string_view part) { return part.data() - line.data(); };

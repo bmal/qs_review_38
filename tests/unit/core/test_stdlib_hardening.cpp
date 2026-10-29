@@ -8,20 +8,21 @@
 #include <vector>
 
 #ifdef _LIBCPP_VERSION
-#define MYPROJ_STDLIB_HARDENED (_LIBCPP_HARDENING_MODE != _LIBCPP_HARDENING_MODE_NONE)
+#define QS_REVIEW_38_STDLIB_HARDENED (_LIBCPP_HARDENING_MODE != _LIBCPP_HARDENING_MODE_NONE)
 #elifdef _GLIBCXX_ASSERTIONS
-#define MYPROJ_STDLIB_HARDENED 1
+#define QS_REVIEW_38_STDLIB_HARDENED 1
 #else
-#define MYPROJ_STDLIB_HARDENED 0
+#define QS_REVIEW_38_STDLIB_HARDENED 0
 #endif
 
 namespace {
 
 // A function, not a constant, so no preset sees the code after the skip as unreachable.
-bool stdlib_is_hardened() { return MYPROJ_STDLIB_HARDENED != 0; }
+bool stdlib_is_hardened() { return QS_REVIEW_38_STDLIB_HARDENED != 0; }
 
 TEST(StdlibHardening, OutOfBoundsVectorIndexAborts) {
-    MYPROJ_SKIP_UNDER_SANITIZER(TSAN, "a death test forks a process that already runs threads");
+    QS_REVIEW_38_SKIP_UNDER_SANITIZER(TSAN,
+                                      "a death test forks a process that already runs threads");
     // Every preset compiles the body, so lint reads the same code in each of them.
     if (!stdlib_is_hardened()) {
         GTEST_SKIP() << "standard library hardening is off in this preset";

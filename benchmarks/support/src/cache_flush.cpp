@@ -6,7 +6,7 @@
 #include <cstddef>
 #include <vector>
 
-namespace myproj::bench_support {
+namespace qs_review_38::bench_support {
 
 void flush_cache() {
     constexpr std::size_t cache_line = 64;
@@ -18,4 +18,4 @@ void flush_cache() {
     benchmark::ClobberMemory();
 }
 
-} // namespace myproj::bench_support
+} // namespace qs_review_38::bench_support

@@ -32,8 +32,8 @@ validate_name() {
     if [[ "$(tr '\n' ' ' <<<"${cxx_keywords}")" == *" ${name} "* ]]; then
         fail "'${name}' is a C++ keyword"
     fi
-    if [ "${name}" = std ] || [ "${name}" = myproj ]; then
-        fail "'${name}' would shadow namespace ${name} inside namespace myproj"
+    if [ "${name}" = std ] || [ "${name}" = qs_review_38 ]; then
+        fail "'${name}' would shadow namespace ${name} inside namespace qs_review_38"
     fi
 }
 
@@ -41,11 +41,11 @@ validate_name() {
 taken_targets() {
     local dir
     printf '%s\n' all clean help install test package package_source edit_cache rebuild_cache \
-        list_install_components myproj_warnings myproj_options myproj_test_support \
-        myproj_bench_support run_benchmarks run_fuzz
+        list_install_components qs_review_38_warnings qs_review_38_options qs_review_38_test_support \
+        qs_review_38_bench_support run_benchmarks run_fuzz
     for dir in "${root}"/libs/*/; do
         dir="$(basename "${dir}")"
-        printf '%s\n' "myproj_${dir}" "${dir}_unit_tests" "${dir}_benchmarks"
+        printf '%s\n' "qs_review_38_${dir}" "${dir}_unit_tests" "${dir}_benchmarks"
     done
     for dir in "${root}"/apps/*/; do basename "${dir}"; done
 }

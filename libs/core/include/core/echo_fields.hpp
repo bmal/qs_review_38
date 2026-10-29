@@ -8,7 +8,7 @@
 #include <iosfwd>
 #include <string_view>
 
-namespace myproj::core {
+namespace qs_review_38::core {
 
 // Where echoed fields go. Implementations own formatting and the destination.
 class OutputSink {
@@ -41,4 +41,4 @@ struct EchoError {
 [[nodiscard]] std::expected<EchoTotals, EchoError> echo_fields(std::istream& input,
                                                                OutputSink& sink);
 
-} // namespace myproj::core
+} // namespace qs_review_38::core

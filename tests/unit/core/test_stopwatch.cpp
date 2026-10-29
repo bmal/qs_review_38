@@ -7,7 +7,7 @@
 
 #include <chrono>
 
-namespace myproj::core {
+namespace qs_review_38::core {
 
 using namespace std::chrono_literals;
 using test_support::FakeClock;
@@ -32,4 +32,4 @@ TEST(Stopwatch, RestartMeasuresFromTheRestart) {
     EXPECT_EQ(stopwatch.elapsed(), 5ms);
 }
 
-} // namespace myproj::core
+} // namespace qs_review_38::core

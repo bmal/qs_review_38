@@ -7,7 +7,7 @@ usage() {
     cat <<EOF
 Usage: scripts/build-msan-libcxx.sh [--check]
 
-Builds an instrumented libc++ into \${XDG_CACHE_HOME:-~/.cache}/myproj/msan-libcxx/<clang version>/
+Builds an instrumented libc++ into \${XDG_CACHE_HOME:-~/.cache}/qs_review_38/msan-libcxx/<clang version>/
 for the Clang the msan preset uses, then prints that directory. Linux only.
 
   --check  Exit 0 when the build exists, 1 when it does not; build nothing.
@@ -50,7 +50,7 @@ full_version="$("${cxx}" --version | sed -n 's/.*clang version \([0-9][0-9]*\.[0
 major="${full_version%%.*}"
 
 # cmake/toolchain/compiler.cmake computes the same directory; keep the two in step.
-prefix="${XDG_CACHE_HOME:-${HOME}/.cache}/myproj/msan-libcxx/${full_version}"
+prefix="${XDG_CACHE_HOME:-${HOME}/.cache}/qs_review_38/msan-libcxx/${full_version}"
 if [ -e "${prefix}/lib/libc++.so" ]; then
     echo "build-msan-libcxx: already built for Clang ${full_version} in ${prefix}"
     exit 0

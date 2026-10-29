@@ -12,7 +12,7 @@
 
 namespace {
 
-using myproj::bench_support::add_percentiles;
+using qs_review_38::bench_support::add_percentiles;
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters): both come from benchmark ranges.
 std::string make_line(std::int64_t fields, std::int64_t seed) {
@@ -28,7 +28,7 @@ void bm_parse_line(benchmark::State& state) {
     const std::string line = make_line(state.range(0), 0);
     // NOLINTNEXTLINE(clang-analyzer-deadcode.DeadStores): the loop variable only counts runs.
     for (auto _ : state) {
-        auto fields = myproj::parser::parse_line(line);
+        auto fields = qs_review_38::parser::parse_line(line);
         benchmark::DoNotOptimize(fields);
     }
     state.SetItemsProcessed(state.iterations() * state.range(0));
@@ -46,10 +46,10 @@ void bm_parse_line_cold(benchmark::State& state) {
     // NOLINTNEXTLINE(clang-analyzer-deadcode.DeadStores): the loop variable only counts runs.
     for (auto _ : state) {
         state.PauseTiming();
-        myproj::bench_support::flush_cache();
+        qs_review_38::bench_support::flush_cache();
         state.ResumeTiming();
         for (const std::string& line : lines) {
-            auto fields = myproj::parser::parse_line(line);
+            auto fields = qs_review_38::parser::parse_line(line);
             benchmark::DoNotOptimize(fields);
         }
     }

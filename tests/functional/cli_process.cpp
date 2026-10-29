@@ -28,11 +28,11 @@
 extern char** environ;
 #endif
 
-namespace myproj::functional {
+namespace qs_review_38::functional {
 
 namespace {
 
-constexpr const char* cli_path = MYPROJ_CLI_PATH;
+constexpr const char* cli_path = QS_REVIEW_38_CLI_PATH;
 
 std::string read_file(const std::filesystem::path& path) {
     const std::ifstream file(path, std::ios::binary);
@@ -49,7 +49,8 @@ std::string cannot(std::string_view what, int error) {
 class ScratchDir {
 public:
     ScratchDir() {
-        std::string name = (std::filesystem::temp_directory_path() / "myproj_cli.XXXXXX").string();
+        std::string name =
+            (std::filesystem::temp_directory_path() / "qs_review_38_cli.XXXXXX").string();
         if (::mkdtemp(name.data()) != nullptr) {
             path_ = name;
         }
@@ -109,4 +110,4 @@ std::expected<CliRun, std::string> run_cli(std::string_view input, std::vector<s
     return CliRun{.exit_code = exit_code, .out = read_file(out), .err = read_file(err)};
 }
 
-} // namespace myproj::functional
+} // namespace qs_review_38::functional

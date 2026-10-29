@@ -1,12 +1,12 @@
 // Mechanism: a test data builder, so a test states only the values that matter to it.
-// Starts from a valid default and ends in build(); for tests that already link myproj::core.
+// Starts from a valid default and ends in build(); for tests that already link qs_review_38::core.
 #pragma once
 
 #include "core/counter.hpp"
 
 #include <cstdint>
 
-namespace myproj::test_support {
+namespace qs_review_38::test_support {
 
 // A core::Counter already holding a total.
 class CounterBuilder {
@@ -26,4 +26,4 @@ private:
     std::uint64_t total_ = 0;
 };
 
-} // namespace myproj::test_support
+} // namespace qs_review_38::test_support

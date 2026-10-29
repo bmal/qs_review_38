@@ -21,7 +21,7 @@ ctest --preset asan -R '^Counter\.' --output-on-failure
 When a test cannot work under one sanitizer, such as a death test under TSan, skip it with the reason:
 
 ```cpp
-MYPROJ_SKIP_UNDER_SANITIZER(TSAN, "a death test forks a process that already runs threads");
+QS_REVIEW_38_SKIP_UNDER_SANITIZER(TSAN, "a death test forks a process that already runs threads");
 ```
 
 It comes from `support/sanitizers.hpp`; the names are `ASAN`, `TSAN`, and `MSAN`, on GCC and Clang. `ctest` lists the test as skipped.

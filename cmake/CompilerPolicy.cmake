@@ -1,4 +1,4 @@
-# Compilation policy: the myproj_warnings and myproj_options interface targets.
+# Compilation policy: the qs_review_38_warnings and qs_review_38_options interface targets.
 # Every internal target links both PRIVATE, so nothing here reaches consumers.
 
 option(
@@ -21,9 +21,9 @@ set(
   "Value of -march for internal targets, such as native or x86-64-v3"
 )
 
-add_library(myproj_warnings INTERFACE)
+add_library(qs_review_38_warnings INTERFACE)
 target_compile_options(
-  myproj_warnings
+  qs_review_38_warnings
   INTERFACE
     -Wall
     -Wextra
@@ -43,41 +43,41 @@ target_compile_options(
     $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wextra-semi;-Wunreachable-code>
 )
 if(PROJECT_IS_TOP_LEVEL AND PROJECT_WARNINGS_AS_ERRORS)
-  target_compile_options(myproj_warnings INTERFACE -Werror)
+  target_compile_options(qs_review_38_warnings INTERFACE -Werror)
 endif()
 
-add_library(myproj_options INTERFACE)
+add_library(qs_review_38_options INTERFACE)
 if("cxx_std_${PROJECT_CXX_STANDARD}" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-  target_compile_features(myproj_options INTERFACE cxx_std_${PROJECT_CXX_STANDARD})
+  target_compile_features(qs_review_38_options INTERFACE cxx_std_${PROJECT_CXX_STANDARD})
 else()
   # CMake before 3.30 has no cxx_std_26 for GCC or Clang; this flag follows, and overrides, -std=c++23.
-  target_compile_options(myproj_options INTERFACE -std=c++${PROJECT_CXX_STANDARD})
+  target_compile_options(qs_review_38_options INTERFACE -std=c++${PROJECT_CXX_STANDARD})
 endif()
 # Clang drops standard library type information by default, so the debugger shows incomplete types.
 target_compile_options(
-  myproj_options
+  qs_review_38_options
   INTERFACE $<$<AND:$<CONFIG:Debug>,$<CXX_COMPILER_ID:Clang,AppleClang>>:-fstandalone-debug>
 )
 # native compiles as the hft triplet resolved it: on an x86 VM, native lacks features of the named CPU,
 # and LTO does not inline dependency code built for features the caller lacks.
 if(PROJECT_MARCH STREQUAL "native" AND PROJECT_NATIVE_FLAG)
-  target_compile_options(myproj_options INTERFACE ${PROJECT_NATIVE_FLAG})
+  target_compile_options(qs_review_38_options INTERFACE ${PROJECT_NATIVE_FLAG})
 elseif(PROJECT_MARCH)
-  target_compile_options(myproj_options INTERFACE -march=${PROJECT_MARCH})
+  target_compile_options(qs_review_38_options INTERFACE -march=${PROJECT_MARCH})
 endif()
 # An installed archive keeps machine code beside the LTO bitcode, so a consumer without LTO links it.
 # lld links a fat object's machine code unless the link asks for its bitcode too.
 if(CMAKE_INTERPROCEDURAL_OPTIMIZATION AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
-  target_compile_options(myproj_options INTERFACE -ffat-lto-objects)
-  target_link_options(myproj_options INTERFACE $<$<CXX_COMPILER_ID:Clang>:-ffat-lto-objects>)
+  target_compile_options(qs_review_38_options INTERFACE -ffat-lto-objects)
+  target_link_options(qs_review_38_options INTERFACE $<$<CXX_COMPILER_ID:Clang>:-ffat-lto-objects>)
 endif()
 if(PROJECT_STDLIB_HARDENING)
   # Each macro is ignored by the other standard library, so both are always set.
   target_compile_definitions(
-    myproj_options
+    qs_review_38_options
     INTERFACE _GLIBCXX_ASSERTIONS _LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_DEBUG
   )
 endif()
 if(PROJECT_FRAME_POINTERS)
-  target_compile_options(myproj_options INTERFACE -fno-omit-frame-pointer)
+  target_compile_options(qs_review_38_options INTERFACE -fno-omit-frame-pointer)
 endif()

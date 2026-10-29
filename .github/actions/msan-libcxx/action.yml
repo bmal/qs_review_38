@@ -24,7 +24,7 @@ runs:
     - name: Restore the instrumented libc++
       uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
-        path: ~/.cache/myproj/msan-libcxx
+        path: ~/.cache/qs_review_38/msan-libcxx
         key: msan-libcxx-clang-${{ steps.clang.outputs.version }}-${{ hashFiles('scripts/build-msan-libcxx.sh') }}
 
     - name: Build the instrumented libc++ unless it was restored

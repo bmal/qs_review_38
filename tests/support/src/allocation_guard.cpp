@@ -12,17 +12,17 @@
 // Clang's standalone LeakSanitizer owns operator new too; GCC's has no macro and links either way.
 #ifdef __has_feature
 #if __has_feature(leak_sanitizer)
-#define MYPROJ_UNDER_LSAN 1
+#define QS_REVIEW_38_UNDER_LSAN 1
 #endif
 #endif
-#ifndef MYPROJ_UNDER_LSAN
-#define MYPROJ_UNDER_LSAN 0
+#ifndef QS_REVIEW_38_UNDER_LSAN
+#define QS_REVIEW_38_UNDER_LSAN 0
 #endif
 
 // Darwin sanitizers have no allocation hook, and ASan there ignores mismatched new and delete.
-#if !defined(__APPLE__) &&                                                                         \
-    (MYPROJ_UNDER_ASAN || MYPROJ_UNDER_TSAN || MYPROJ_UNDER_MSAN || MYPROJ_UNDER_LSAN)
-#define MYPROJ_SANITIZER_ALLOCATOR 1
+#if !defined(__APPLE__) && (QS_REVIEW_38_UNDER_ASAN || QS_REVIEW_38_UNDER_TSAN ||                  \
+                            QS_REVIEW_38_UNDER_MSAN || QS_REVIEW_38_UNDER_LSAN)
+#define QS_REVIEW_38_SANITIZER_ALLOCATOR 1
 #endif
 
 namespace {
@@ -32,7 +32,7 @@ std::atomic<std::size_t> allocation_count{0};
 
 } // namespace
 
-#ifdef MYPROJ_SANITIZER_ALLOCATOR
+#ifdef QS_REVIEW_38_SANITIZER_ALLOCATOR
 
 #if __has_include(<sanitizer/allocator_interface.h>)
 #include <sanitizer/allocator_interface.h>
@@ -152,7 +152,7 @@ void operator delete[](void* pointer, std::align_val_t /*align*/,
 
 #endif
 
-namespace myproj::test_support {
+namespace qs_review_38::test_support {
 
 std::size_t allocations_so_far() noexcept {
     return allocation_count.load(std::memory_order_relaxed);
@@ -174,4 +174,4 @@ AllocationGuard::~AllocationGuard() {
 
 std::size_t AllocationGuard::allocations() const noexcept { return allocations_so_far() - start_; }
 
-} // namespace myproj::test_support
+} // namespace qs_review_38::test_support

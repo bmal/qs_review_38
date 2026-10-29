@@ -39,11 +39,11 @@ The strategy follows Vladimir Khorikov's *Unit Testing: Principles, Practices, a
 
 ## Use the support library
 
-`tests/support/` holds data builders, `FakeClock`, `AllocationGuard`, and `MYPROJ_SKIP_UNDER_SANITIZER`. It holds no logic.
+`tests/support/` holds data builders, `FakeClock`, `AllocationGuard`, and `QS_REVIEW_38_SKIP_UNDER_SANITIZER`. It holds no logic.
 When a hot path must never allocate, hold a guard across it; the test fails with the count at the guard's line:
 
 ```cpp
-const myproj::test_support::AllocationGuard guard;
+const qs_review_38::test_support::AllocationGuard guard;
 ```
 
 [Add tests](how-to/add-tests.md) says where each file goes; [test labels](reference/test-labels.md) says which preset runs it.

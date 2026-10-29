@@ -1,11 +1,11 @@
-// Functional tests of myproj_cli as a black box: arguments and stdin in, exit code and output out.
-// They know the app only by its path and its documented behavior, never by its code.
+// Functional tests of qs_review_38_cli as a black box: arguments and stdin in, exit code and output
+// out. They know the app only by its path and its documented behavior, never by its code.
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "cli_process.hpp"
 
-namespace myproj::functional {
+namespace qs_review_38::functional {
 
 using testing::HasSubstr;
 using testing::Not;
@@ -16,7 +16,7 @@ TEST(Cli, PrintsTheBannerThenEachFieldAndExitsZero) {
 
     ASSERT_TRUE(run.has_value()) << run.error();
     EXPECT_EQ(run->exit_code, 0);
-    EXPECT_THAT(run->out, StartsWith("myproj "));
+    EXPECT_THAT(run->out, StartsWith("qs_review_38 "));
     EXPECT_THAT(run->out, HasSubstr("\na: 1\nb: 2\n"));
 }
 
@@ -53,4 +53,4 @@ TEST(Cli, ExitsTwoAndNamesAMalformedArgumentBeforeReadingTheInput) {
     EXPECT_THAT(run->out, Not(HasSubstr("a: 1")));
 }
 
-} // namespace myproj::functional
+} // namespace qs_review_38::functional

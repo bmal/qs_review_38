@@ -4,9 +4,9 @@
 
 #include <benchmark/benchmark.h>
 
-namespace myproj::bench_support {
+namespace qs_review_38::bench_support {
 
 // Adds p50, p90, and p99 to a benchmark: BENCHMARK(bm_x)->Apply(add_percentiles).
 void add_percentiles(benchmark::Benchmark* bench);
 
-} // namespace myproj::bench_support
+} // namespace qs_review_38::bench_support
