@@ -1,0 +1,15 @@
+# Codecov shows coverage and never fails a check: coverage is not a gate (docs/decisions.md, D21).
+coverage:
+  status:
+    project: off
+    patch: off
+
+ignore:
+  - "tests/**/*"
+  - "build/**/*"
+  - "apps/**/*"
+  - "benchmarks/**/*"
+
+comment:
+  layout: "reach, diff, flags, files"
+  require_changes: true

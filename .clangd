@@ -1,0 +1,17 @@
+# clangd takes its flags from compile_commands.json and its checks from .clang-tidy, never its own list.
+# Checks too slow to run on every keystroke are left to `make lint`.
+Diagnostics:
+  UnusedIncludes: Strict
+  MissingIncludes: Strict
+  ClangTidy:
+    FastCheckFilter: Strict
+
+InlayHints:
+  Enabled: Yes
+  ParameterNames: Yes
+  DeducedTypes: Yes
+  Designators: Yes
+  BlockEnd: Yes
+
+Index:
+  Background: Build

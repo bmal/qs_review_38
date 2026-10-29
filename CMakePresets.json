@@ -1,0 +1,1094 @@
+{
+  "version": 8,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 28,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "toolchainFile": "${sourceDir}/cmake/toolchain.cmake",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "PROJECT_COMPILER": "clang",
+        "PROJECT_BUILD_APPS": "ON",
+        "PROJECT_BUILD_TESTS": "ON",
+        "PROJECT_BUILD_BENCHMARKS": "OFF"
+      }
+    },
+    {
+      "name": "host",
+      "hidden": true,
+      "inherits": "base",
+      "condition": {
+        "type": "inList",
+        "string": "${hostSystemName}",
+        "list": [
+          "Darwin",
+          "Linux"
+        ]
+      }
+    },
+    {
+      "name": "gcc",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cacheVariables": {
+        "PROJECT_COMPILER": "gcc"
+      }
+    },
+    {
+      "name": "dev",
+      "displayName": "Debug build with tests",
+      "inherits": "host",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_DEBUG": "-O0 -g3 -fno-omit-frame-pointer",
+        "PROJECT_STDLIB_HARDENING": "ON"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Optimized build with LTO for this machine's CPU, with tests",
+      "inherits": "host",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_INTERPROCEDURAL_OPTIMIZATION": "ON",
+        "PROJECT_MARCH": "native",
+        "PROJECT_TRIPLET_VARIANT": "hft"
+      }
+    },
+    {
+      "name": "relwithdebinfo",
+      "displayName": "Optimized at -O2 with debug info and frame pointers, with tests",
+      "inherits": "host",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_CXX_FLAGS_RELWITHDEBINFO": "-O2 -g -fno-omit-frame-pointer -DNDEBUG"
+      }
+    },
+    {
+      "name": "profile",
+      "displayName": "Release flags with debug info and frame pointers, no LTO, for perf",
+      "inherits": "release",
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS_RELEASE": "-O3 -DNDEBUG -g",
+        "CMAKE_INTERPROCEDURAL_OPTIMIZATION": "OFF",
+        "PROJECT_FRAME_POINTERS": "ON"
+      }
+    },
+    {
+      "name": "cxx26",
+      "displayName": "Debug build with tests in C++26",
+      "inherits": "dev",
+      "cacheVariables": {
+        "PROJECT_CXX_STANDARD": "26"
+      }
+    },
+    {
+      "name": "bench",
+      "displayName": "Release build with benchmarks and frame pointers; its tests run each benchmark once",
+      "inherits": "release",
+      "cacheVariables": {
+        "PROJECT_BUILD_APPS": "OFF",
+        "PROJECT_BUILD_TESTS": "OFF",
+        "PROJECT_BUILD_BENCHMARKS": "ON",
+        "PROJECT_FRAME_POINTERS": "ON"
+      }
+    },
+    {
+      "name": "asan",
+      "displayName": "AddressSanitizer and UBSan at -O1, dependencies instrumented too",
+      "inherits": "host",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_DEBUG": "-O1 -g",
+        "PROJECT_BUILD_APPS": "OFF",
+        "PROJECT_SANITIZER": "address;undefined",
+        "PROJECT_TRIPLET_VARIANT": "asan"
+      }
+    },
+    {
+      "name": "tsan",
+      "displayName": "ThreadSanitizer, dependencies instrumented too",
+      "inherits": "host",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "PROJECT_BUILD_APPS": "OFF",
+        "PROJECT_SANITIZER": "thread",
+        "PROJECT_TRIPLET_VARIANT": "tsan"
+      }
+    },
+    {
+      "name": "msan",
+      "displayName": "MemorySanitizer at -O1 on Linux Clang, after scripts/build-msan-libcxx.sh",
+      "inherits": "host",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_FLAGS_DEBUG": "-O1 -g",
+        "PROJECT_BUILD_APPS": "OFF",
+        "PROJECT_SANITIZER": "memory",
+        "PROJECT_TRIPLET_VARIANT": "msan"
+      }
+    },
+    {
+      "name": "fuzz",
+      "displayName": "libFuzzer harnesses with AddressSanitizer and UndefinedBehaviorSanitizer, no tests",
+      "inherits": "host",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "PROJECT_BUILD_APPS": "OFF",
+        "PROJECT_BUILD_TESTS": "OFF",
+        "PROJECT_BUILD_FUZZ": "ON",
+        "PROJECT_SANITIZER": "address;undefined"
+      }
+    },
+    {
+      "name": "coverage",
+      "displayName": "Debug build with coverage; its coverage target writes coverage/lcov.info",
+      "inherits": "host",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "PROJECT_BUILD_APPS": "OFF",
+        "ENABLE_COVERAGE": "ON"
+      }
+    },
+    {
+      "name": "dev-gcc",
+      "displayName": "Debug build with tests, GCC",
+      "inherits": [
+        "gcc",
+        "dev"
+      ]
+    },
+    {
+      "name": "release-gcc",
+      "displayName": "Optimized build with tests, GCC",
+      "inherits": [
+        "gcc",
+        "release"
+      ]
+    },
+    {
+      "name": "relwithdebinfo-gcc",
+      "displayName": "Optimized at -O2 with debug info and frame pointers, GCC",
+      "inherits": [
+        "gcc",
+        "relwithdebinfo"
+      ]
+    },
+    {
+      "name": "profile-gcc",
+      "displayName": "Release flags with debug info and frame pointers, no LTO, GCC",
+      "inherits": [
+        "gcc",
+        "profile"
+      ]
+    },
+    {
+      "name": "cxx26-gcc",
+      "displayName": "Debug build with tests in C++26, GCC",
+      "inherits": [
+        "gcc",
+        "cxx26"
+      ]
+    },
+    {
+      "name": "bench-gcc",
+      "displayName": "Release build with benchmarks and frame pointers, GCC",
+      "inherits": [
+        "gcc",
+        "bench"
+      ]
+    },
+    {
+      "name": "asan-gcc",
+      "displayName": "AddressSanitizer and UBSan at -O1, GCC",
+      "inherits": [
+        "gcc",
+        "asan"
+      ]
+    },
+    {
+      "name": "tsan-gcc",
+      "displayName": "ThreadSanitizer, GCC",
+      "inherits": [
+        "gcc",
+        "tsan"
+      ]
+    },
+    {
+      "name": "coverage-gcc",
+      "displayName": "Debug build with gcov coverage, GCC",
+      "inherits": [
+        "gcc",
+        "coverage"
+      ]
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "dev",
+      "configurePreset": "dev"
+    },
+    {
+      "name": "release",
+      "configurePreset": "release"
+    },
+    {
+      "name": "relwithdebinfo",
+      "configurePreset": "relwithdebinfo"
+    },
+    {
+      "name": "profile",
+      "configurePreset": "profile"
+    },
+    {
+      "name": "cxx26",
+      "configurePreset": "cxx26"
+    },
+    {
+      "name": "bench",
+      "configurePreset": "bench"
+    },
+    {
+      "name": "asan",
+      "configurePreset": "asan"
+    },
+    {
+      "name": "tsan",
+      "configurePreset": "tsan"
+    },
+    {
+      "name": "msan",
+      "configurePreset": "msan"
+    },
+    {
+      "name": "fuzz",
+      "configurePreset": "fuzz"
+    },
+    {
+      "name": "coverage",
+      "configurePreset": "coverage"
+    },
+    {
+      "name": "dev-gcc",
+      "configurePreset": "dev-gcc",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "release-gcc",
+      "configurePreset": "release-gcc",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "relwithdebinfo-gcc",
+      "configurePreset": "relwithdebinfo-gcc",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "profile-gcc",
+      "configurePreset": "profile-gcc",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "cxx26-gcc",
+      "configurePreset": "cxx26-gcc",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "bench-gcc",
+      "configurePreset": "bench-gcc",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "asan-gcc",
+      "configurePreset": "asan-gcc",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "tsan-gcc",
+      "configurePreset": "tsan-gcc",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "coverage-gcc",
+      "configurePreset": "coverage-gcc",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "test-base",
+      "hidden": true,
+      "output": {
+        "outputOnFailure": true,
+        "outputJUnitFile": "junit-${presetName}.xml"
+      },
+      "execution": {
+        "noTestsAction": "error"
+      }
+    },
+    {
+      "name": "no-stress",
+      "hidden": true,
+      "inherits": "test-base",
+      "filter": {
+        "exclude": {
+          "label": "^stress$"
+        }
+      }
+    },
+    {
+      "name": "unit-integration",
+      "hidden": true,
+      "inherits": "no-stress",
+      "filter": {
+        "include": {
+          "label": "^(unit|integration)$"
+        },
+        "exclude": {
+          "label": "^stress$"
+        }
+      }
+    },
+    {
+      "name": "asan-options",
+      "hidden": true,
+      "environment": {
+        "ASAN_OPTIONS": "abort_on_error=1:detect_leaks=1:detect_stack_use_after_return=1:check_initialization_order=1:strict_string_checks=1:suppressions='${sourceDir}/tests/sanitizers/asan.supp'",
+        "UBSAN_OPTIONS": "abort_on_error=1:halt_on_error=1:print_stacktrace=1",
+        "LSAN_OPTIONS": "abort_on_error=1:suppressions='${sourceDir}/tests/sanitizers/lsan.supp'"
+      }
+    },
+    {
+      "name": "tsan-options",
+      "hidden": true,
+      "environment": {
+        "TSAN_OPTIONS": "abort_on_error=1:halt_on_error=1:second_deadlock_stack=1:suppressions='${sourceDir}/tests/sanitizers/tsan.supp'"
+      }
+    },
+    {
+      "name": "msan-options",
+      "hidden": true,
+      "environment": {
+        "MSAN_OPTIONS": "abort_on_error=1:halt_on_error=1:print_stacktrace=1"
+      }
+    },
+    {
+      "name": "dev",
+      "displayName": "Unit and integration tests",
+      "configurePreset": "dev",
+      "inherits": "unit-integration"
+    },
+    {
+      "name": "functional",
+      "displayName": "Black-box tests of the apps, on the dev build",
+      "configurePreset": "dev",
+      "inherits": "test-base",
+      "filter": {
+        "include": {
+          "label": "^functional$"
+        }
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "timeout": 60
+      }
+    },
+    {
+      "name": "stress",
+      "displayName": "Long-running tests labeled stress, on the dev build",
+      "configurePreset": "dev",
+      "inherits": "test-base",
+      "filter": {
+        "include": {
+          "label": "^stress$"
+        }
+      }
+    },
+    {
+      "name": "release",
+      "configurePreset": "release",
+      "inherits": "no-stress"
+    },
+    {
+      "name": "relwithdebinfo",
+      "configurePreset": "relwithdebinfo",
+      "inherits": "no-stress"
+    },
+    {
+      "name": "profile",
+      "configurePreset": "profile",
+      "inherits": "no-stress"
+    },
+    {
+      "name": "cxx26",
+      "configurePreset": "cxx26",
+      "inherits": "unit-integration"
+    },
+    {
+      "name": "bench",
+      "displayName": "Run each benchmark once, as a smoke test",
+      "configurePreset": "bench",
+      "inherits": "test-base",
+      "filter": {
+        "include": {
+          "label": "^bench$"
+        }
+      }
+    },
+    {
+      "name": "asan",
+      "configurePreset": "asan",
+      "inherits": [
+        "no-stress",
+        "asan-options"
+      ]
+    },
+    {
+      "name": "tsan",
+      "configurePreset": "tsan",
+      "inherits": [
+        "no-stress",
+        "tsan-options"
+      ]
+    },
+    {
+      "name": "asan-stress",
+      "displayName": "Tests labeled stress under AddressSanitizer and UBSan, each capped at five minutes",
+      "configurePreset": "asan",
+      "inherits": [
+        "test-base",
+        "asan-options"
+      ],
+      "filter": {
+        "include": {
+          "label": "^stress$"
+        }
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "timeout": 300
+      }
+    },
+    {
+      "name": "tsan-stress",
+      "displayName": "Tests labeled stress under ThreadSanitizer, each capped at five minutes",
+      "configurePreset": "tsan",
+      "inherits": [
+        "test-base",
+        "tsan-options"
+      ],
+      "filter": {
+        "include": {
+          "label": "^stress$"
+        }
+      },
+      "execution": {
+        "noTestsAction": "error",
+        "timeout": 300
+      }
+    },
+    {
+      "name": "msan",
+      "configurePreset": "msan",
+      "inherits": [
+        "no-stress",
+        "msan-options"
+      ]
+    },
+    {
+      "name": "fuzz",
+      "displayName": "Replay the seed corpus of every fuzz harness",
+      "configurePreset": "fuzz",
+      "inherits": [
+        "test-base",
+        "asan-options"
+      ],
+      "filter": {
+        "include": {
+          "label": "^fuzz$"
+        }
+      }
+    },
+    {
+      "name": "coverage",
+      "configurePreset": "coverage",
+      "inherits": "no-stress"
+    },
+    {
+      "name": "dev-gcc",
+      "configurePreset": "dev-gcc",
+      "inherits": "unit-integration",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "functional-gcc",
+      "displayName": "Black-box tests of the apps, on the dev-gcc build",
+      "configurePreset": "dev-gcc",
+      "inherits": "functional",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "stress-gcc",
+      "displayName": "Long-running tests labeled stress, on the dev-gcc build",
+      "configurePreset": "dev-gcc",
+      "inherits": "stress",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "release-gcc",
+      "configurePreset": "release-gcc",
+      "inherits": "no-stress",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "relwithdebinfo-gcc",
+      "configurePreset": "relwithdebinfo-gcc",
+      "inherits": "no-stress",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "profile-gcc",
+      "configurePreset": "profile-gcc",
+      "inherits": "no-stress",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "cxx26-gcc",
+      "configurePreset": "cxx26-gcc",
+      "inherits": "unit-integration",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "bench-gcc",
+      "displayName": "Run each benchmark once, as a smoke test, GCC",
+      "configurePreset": "bench-gcc",
+      "inherits": "bench",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "asan-gcc",
+      "configurePreset": "asan-gcc",
+      "inherits": [
+        "no-stress",
+        "asan-options"
+      ],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "tsan-gcc",
+      "configurePreset": "tsan-gcc",
+      "inherits": [
+        "no-stress",
+        "tsan-options"
+      ],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "coverage-gcc",
+      "configurePreset": "coverage-gcc",
+      "inherits": "no-stress",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "dev",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "dev"
+        },
+        {
+          "type": "build",
+          "name": "dev"
+        },
+        {
+          "type": "test",
+          "name": "dev"
+        }
+      ]
+    },
+    {
+      "name": "functional",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "dev"
+        },
+        {
+          "type": "build",
+          "name": "dev"
+        },
+        {
+          "type": "test",
+          "name": "functional"
+        }
+      ]
+    },
+    {
+      "name": "stress",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "dev"
+        },
+        {
+          "type": "build",
+          "name": "dev"
+        },
+        {
+          "type": "test",
+          "name": "stress"
+        }
+      ]
+    },
+    {
+      "name": "release",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "release"
+        },
+        {
+          "type": "build",
+          "name": "release"
+        },
+        {
+          "type": "test",
+          "name": "release"
+        }
+      ]
+    },
+    {
+      "name": "relwithdebinfo",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "relwithdebinfo"
+        },
+        {
+          "type": "build",
+          "name": "relwithdebinfo"
+        },
+        {
+          "type": "test",
+          "name": "relwithdebinfo"
+        }
+      ]
+    },
+    {
+      "name": "profile",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "profile"
+        },
+        {
+          "type": "build",
+          "name": "profile"
+        },
+        {
+          "type": "test",
+          "name": "profile"
+        }
+      ]
+    },
+    {
+      "name": "cxx26",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "cxx26"
+        },
+        {
+          "type": "build",
+          "name": "cxx26"
+        },
+        {
+          "type": "test",
+          "name": "cxx26"
+        }
+      ]
+    },
+    {
+      "name": "bench",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "bench"
+        },
+        {
+          "type": "build",
+          "name": "bench"
+        },
+        {
+          "type": "test",
+          "name": "bench"
+        }
+      ]
+    },
+    {
+      "name": "asan",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "asan"
+        },
+        {
+          "type": "build",
+          "name": "asan"
+        },
+        {
+          "type": "test",
+          "name": "asan"
+        }
+      ]
+    },
+    {
+      "name": "tsan",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "tsan"
+        },
+        {
+          "type": "build",
+          "name": "tsan"
+        },
+        {
+          "type": "test",
+          "name": "tsan"
+        }
+      ]
+    },
+    {
+      "name": "msan",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "msan"
+        },
+        {
+          "type": "build",
+          "name": "msan"
+        },
+        {
+          "type": "test",
+          "name": "msan"
+        }
+      ]
+    },
+    {
+      "name": "fuzz",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "fuzz"
+        },
+        {
+          "type": "build",
+          "name": "fuzz"
+        },
+        {
+          "type": "test",
+          "name": "fuzz"
+        }
+      ]
+    },
+    {
+      "name": "coverage",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "coverage"
+        },
+        {
+          "type": "build",
+          "name": "coverage"
+        },
+        {
+          "type": "test",
+          "name": "coverage"
+        }
+      ]
+    },
+    {
+      "name": "dev-gcc",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "dev-gcc"
+        },
+        {
+          "type": "build",
+          "name": "dev-gcc"
+        },
+        {
+          "type": "test",
+          "name": "dev-gcc"
+        }
+      ]
+    },
+    {
+      "name": "functional-gcc",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "dev-gcc"
+        },
+        {
+          "type": "build",
+          "name": "dev-gcc"
+        },
+        {
+          "type": "test",
+          "name": "functional-gcc"
+        }
+      ]
+    },
+    {
+      "name": "stress-gcc",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "dev-gcc"
+        },
+        {
+          "type": "build",
+          "name": "dev-gcc"
+        },
+        {
+          "type": "test",
+          "name": "stress-gcc"
+        }
+      ]
+    },
+    {
+      "name": "release-gcc",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "release-gcc"
+        },
+        {
+          "type": "build",
+          "name": "release-gcc"
+        },
+        {
+          "type": "test",
+          "name": "release-gcc"
+        }
+      ]
+    },
+    {
+      "name": "relwithdebinfo-gcc",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "relwithdebinfo-gcc"
+        },
+        {
+          "type": "build",
+          "name": "relwithdebinfo-gcc"
+        },
+        {
+          "type": "test",
+          "name": "relwithdebinfo-gcc"
+        }
+      ]
+    },
+    {
+      "name": "profile-gcc",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "profile-gcc"
+        },
+        {
+          "type": "build",
+          "name": "profile-gcc"
+        },
+        {
+          "type": "test",
+          "name": "profile-gcc"
+        }
+      ]
+    },
+    {
+      "name": "cxx26-gcc",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "cxx26-gcc"
+        },
+        {
+          "type": "build",
+          "name": "cxx26-gcc"
+        },
+        {
+          "type": "test",
+          "name": "cxx26-gcc"
+        }
+      ]
+    },
+    {
+      "name": "bench-gcc",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "bench-gcc"
+        },
+        {
+          "type": "build",
+          "name": "bench-gcc"
+        },
+        {
+          "type": "test",
+          "name": "bench-gcc"
+        }
+      ]
+    },
+    {
+      "name": "asan-gcc",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "asan-gcc"
+        },
+        {
+          "type": "build",
+          "name": "asan-gcc"
+        },
+        {
+          "type": "test",
+          "name": "asan-gcc"
+        }
+      ]
+    },
+    {
+      "name": "tsan-gcc",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "tsan-gcc"
+        },
+        {
+          "type": "build",
+          "name": "tsan-gcc"
+        },
+        {
+          "type": "test",
+          "name": "tsan-gcc"
+        }
+      ]
+    },
+    {
+      "name": "coverage-gcc",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "coverage-gcc"
+        },
+        {
+          "type": "build",
+          "name": "coverage-gcc"
+        },
+        {
+          "type": "test",
+          "name": "coverage-gcc"
+        }
+      ]
+    }
+  ]
+}
